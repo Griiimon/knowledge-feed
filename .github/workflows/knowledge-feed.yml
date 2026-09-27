@@ -18,6 +18,13 @@ jobs:
       - run: pip install -e .
       - run: python -m knowledge_feed generate-and-build
         env: {OPENROUTER_API_KEY: '${{ secrets.OPENROUTER_API_KEY }}'}
+      - name: Upload raw model responses on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openrouter-debug-responses
+          path: debug/openrouter-responses.jsonl
+          if-no-files-found: ignore
       - run: |
           if git diff --quiet -- content/articles; then exit 1; fi
           slug=$(git diff --name-only -- content/articles | sed -n "s#content/articles/.*-\(.*\)\.md#\1#p" | head -1)

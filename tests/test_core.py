@@ -7,7 +7,7 @@ import pytest
 from knowledge_feed.content import load_article, save_article
 from knowledge_feed.config import load_config
 from knowledge_feed.deduplication import is_duplicate
-from knowledge_feed.generator import parse_generated
+from knowledge_feed.generator import ResponseLogger, parse_generated
 from knowledge_feed.models import Article
 from knowledge_feed.openrouter import OpenRouterClient, OpenRouterError
 from knowledge_feed.site import build_site
@@ -150,6 +150,50 @@ def test_generation_retries_after_an_invalid_repair_response():
     )
 
     assert result.title == "A focused topic"
+
+
+def test_generation_logs_raw_responses_before_review_json_is_parsed(tmp_path):
+    from knowledge_feed.generator import generate_article
+    from knowledge_feed.models import Topic
+
+    class FakeClient:
+        def __init__(self):
+            self.calls = 0
+
+        def chat(self, prompt):
+            self.calls += 1
+            if self.calls == 2:
+                return '{"approved": true, "quality_score": "unterminated}'
+            return json.dumps(
+                {
+                    "title": "A focused topic",
+                    "summary": "Brief summary",
+                    "body_markdown": "word " * 300,
+                    "tags": ["test"],
+                    "sources": [],
+                }
+            )
+
+    logger = ResponseLogger(tmp_path / "debug/responses.jsonl")
+    with pytest.raises(ValueError, match="malformed editorial review JSON"):
+        try:
+            generate_article(
+                FakeClient(),
+                Topic("Test", "test topic", "seed"),
+                {"min_words": 300, "max_words": 700, "review_enabled": True, "approval_threshold": 1},
+                5,
+                logger,
+            )
+        finally:
+            logger.close()
+
+    records = [json.loads(line) for line in logger.path.read_text().splitlines()]
+    assert records[0]["stage"] == "generation"
+    assert json.loads(records[0]["response"])["title"] == "A focused topic"
+    assert records[1] == {
+        "stage": "review",
+        "response": '{"approved": true, "quality_score": "unterminated}',
+    }
 
 
 def test_parse_generated_accepts_json_markdown_fences():
