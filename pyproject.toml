@@ -7,7 +7,7 @@ name = "knowledge-feed"
 version = "0.1.0"
 description = "A static, AI-assisted personal knowledge feed"
 requires-python = ">=3.10"
-dependencies = ["PyYAML>=6.0", "Markdown>=3.5", "Jinja2>=3.1"]
+dependencies = ["Markdown>=3.5", "Jinja2>=3.1"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
