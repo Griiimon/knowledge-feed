@@ -1,0 +1,28 @@
+name: Knowledge Feed
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+    environment: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -e .
+      - run: python -m knowledge_feed generate-and-build
+        env: {OPENROUTER_API_KEY: '${{ secrets.OPENROUTER_API_KEY }}'}
+      - run: |
+          if git diff --quiet -- content/articles; then exit 1; fi
+          slug=$(git diff --name-only -- content/articles | sed -n "s#content/articles/.*-\(.*\)\.md#\1#p" | head -1)
+          git add content/articles && git commit -m "content: add $slug" && git push
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: site}
+      - uses: actions/deploy-pages@v4
