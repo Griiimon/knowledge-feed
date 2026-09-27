@@ -1,8 +1,11 @@
 from pathlib import Path
 import json
+from unittest.mock import patch
+import pytest
 from knowledge_feed.content import load_article
 from knowledge_feed.deduplication import is_duplicate
 from knowledge_feed.models import Article
+from knowledge_feed.openrouter import OpenRouterClient, OpenRouterError
 from knowledge_feed.site import build_site
 from knowledge_feed.topic_selector import select_topic
 
@@ -41,3 +44,32 @@ def test_generation_with_fake_client():
             return json.dumps({'approved':True,'quality_score':8,'issues':[],'suggested_changes':[]})
     result=generate_article(FakeClient(), Topic('Test','test topic','seed'), {'min_words':300,'max_words':700,'review_enabled':True,'approval_threshold':1}, 5)
     assert result.status == 'published' and result.reading_time == 2
+
+
+def test_openrouter_retries_when_response_has_no_message_content():
+    class Response:
+        def __init__(self, payload): self.payload = payload
+        def read(self): return json.dumps(self.payload).encode()
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+
+    responses = [
+        Response({'choices': [{'message': {'content': None}}]}),
+        Response({'choices': [{'message': {'content': 'valid response'}}]}),
+    ]
+    client = OpenRouterClient(api_key='test-key', model='test-model', retries=1)
+    with patch('knowledge_feed.openrouter.request.urlopen', side_effect=responses) as urlopen, patch('knowledge_feed.openrouter.time.sleep'):
+        assert client.chat('prompt') == 'valid response'
+    assert urlopen.call_count == 2
+
+
+def test_openrouter_raises_clear_error_for_missing_message_content():
+    class Response:
+        def read(self): return b'{"choices": [{"message": {"content": null}}]}'
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+
+    client = OpenRouterClient(api_key='test-key', model='test-model', retries=0)
+    with patch('knowledge_feed.openrouter.request.urlopen', return_value=Response()):
+        with pytest.raises(OpenRouterError, match='did not include assistant message content'):
+            client.chat('prompt')
