@@ -18,11 +18,13 @@ GitHub Pages may log visitor information under GitHub's own infrastructure and p
 python -m venv .venv
 source .venv/bin/activate       # Windows: .venv\Scripts\activate
 pip install -e '.[dev]'
+cp .env.example .env             # Windows PowerShell: Copy-Item .env.example .env
+# Add your OpenRouter key to .env (this file is gitignored).
 python -m knowledge_feed build
 python -m knowledge_feed generate-and-build
 ```
 
-Other commands are `generate`, `generate --dry-run`, `validate`, and `list-topics`. The dry run selects and prints a topic without calling OpenRouter or modifying files. The generator has a configured request cap and uses separate generation and editorial-review requests. LLM review is not independent fact-checking; published source links are references.
+Local generation reads `OPENROUTER_API_KEY` and the optional `OPENROUTER_MODEL` from `.env`; shell environment variables take precedence. Other commands are `generate`, `generate --dry-run`, `validate`, and `list-topics`. The dry run selects and prints a topic without calling OpenRouter or modifying files. The generator has a configured request cap and uses separate generation and editorial-review requests. LLM review is not independent fact-checking; published source links are references.
 
 ## Customize
 
