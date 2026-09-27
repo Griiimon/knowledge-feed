@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from knowledge_feed.content import load_article, save_article
+from knowledge_feed.config import load_config
 from knowledge_feed.deduplication import is_duplicate
 from knowledge_feed.models import Article
 from knowledge_feed.openrouter import OpenRouterClient, OpenRouterError
@@ -158,3 +159,23 @@ def test_openrouter_raises_clear_error_for_missing_message_content():
     with patch("knowledge_feed.openrouter.request.urlopen", return_value=Response()):
         with pytest.raises(OpenRouterError, match="did not include assistant message content"):
             client.chat("prompt")
+
+
+def test_load_config_reads_local_dotenv_without_overriding_environment(tmp_path, monkeypatch):
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config/config.json").write_text(
+        '{"openrouter": {"model": "configured-model"}}', encoding="utf-8"
+    )
+    (tmp_path / ".env").write_text(
+        "# Local development credentials\n"
+        "OPENROUTER_API_KEY='local-key'\n"
+        "OPENROUTER_MODEL=local-model\n",
+        encoding="utf-8",
+    )
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setenv("OPENROUTER_MODEL", "shell-model")
+
+    config = load_config(tmp_path)
+
+    assert OpenRouterClient().api_key == "local-key"
+    assert config["openrouter"]["model"] == "shell-model"
