@@ -7,6 +7,7 @@ import pytest
 from knowledge_feed.content import load_article, save_article
 from knowledge_feed.config import load_config
 from knowledge_feed.deduplication import is_duplicate
+from knowledge_feed.generator import parse_generated
 from knowledge_feed.models import Article
 from knowledge_feed.openrouter import OpenRouterClient, OpenRouterError
 from knowledge_feed.site import build_site
@@ -116,6 +117,55 @@ def test_generation_with_fake_client():
         5,
     )
     assert result.status == "published" and result.reading_time == 2
+
+
+def test_generation_retries_after_an_invalid_repair_response():
+    from knowledge_feed.generator import generate_article
+    from knowledge_feed.models import Topic
+
+    valid_article = json.dumps(
+        {
+            "title": "A focused topic",
+            "summary": "Brief summary",
+            "body_markdown": "word " * 300,
+            "tags": ["test"],
+            "sources": [],
+        }
+    )
+
+    class FakeClient:
+        def __init__(self):
+            self.responses = iter(
+                ["not JSON", "still not JSON", valid_article, '{"approved": true, "quality_score": 8}']
+            )
+
+        def chat(self, prompt):
+            return next(self.responses)
+
+    result = generate_article(
+        FakeClient(),
+        Topic("Test", "test topic", "seed"),
+        {"min_words": 300, "max_words": 700, "review_enabled": True, "approval_threshold": 1},
+        5,
+    )
+
+    assert result.title == "A focused topic"
+
+
+def test_parse_generated_accepts_json_markdown_fences():
+    raw = "```json\n" + json.dumps(
+        {
+            "title": "A focused topic",
+            "summary": "Brief summary",
+            "body_markdown": "word " * 300,
+            "tags": ["test"],
+            "sources": [],
+        }
+    ) + "\n```"
+
+    parsed = parse_generated(raw, None, 300, 700)
+
+    assert parsed["title"] == "A focused topic"
 
 
 def test_openrouter_retries_when_response_has_no_message_content():
