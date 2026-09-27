@@ -1,0 +1,220 @@
+{
+  "categories": [
+    {
+      "name": "Ancient Engineering",
+      "description": "Engineering and infrastructure from ancient civilizations.",
+      "seeds": [
+        "Roman concrete",
+        "Antikythera mechanism",
+        "ancient water clocks",
+        "Roman surveying",
+        "Nabataean water systems",
+        "Inca rope bridges"
+      ]
+    },
+    {
+      "name": "Strange Biology",
+      "description": "Unusual adaptations and evolutionary solutions.",
+      "seeds": [
+        "mimic octopus",
+        "axolotl regeneration",
+        "deep sea gigantism",
+        "wood frog freezing",
+        "bombardier beetle",
+        "electric eel"
+      ]
+    },
+    {
+      "name": "Obscure History",
+      "description": "Overlooked events and people with surprising consequences.",
+      "seeds": [
+        "Great Stink London",
+        "War of the Bucket",
+        "Halifax Explosion",
+        "Radium Girls",
+        "Byzantine silk smuggling",
+        "Emu War"
+      ]
+    },
+    {
+      "name": "Forgotten Technology",
+      "description": "Technologies that disappeared, failed, or were replaced.",
+      "seeds": [
+        "pneumatic mail",
+        "mechanical television",
+        "Jacquard loom",
+        "optical telegraph",
+        "atmospheric railway",
+        "water integrator"
+      ]
+    },
+    {
+      "name": "Linguistics",
+      "description": "Unusual language and writing-system properties.",
+      "seeds": [
+        "language isolates",
+        "whistled languages",
+        "balanced ternary number words",
+        "Cherokee syllabary",
+        "rongorongo",
+        "sign language village"
+      ]
+    },
+    {
+      "name": "Geography",
+      "description": "Surprising physical and political geography.",
+      "seeds": [
+        "point Nemo",
+        "double landlocked countries",
+        "Danakil Depression",
+        "moving stones Racetrack Playa",
+        "Okavango Delta",
+        "Lake Vostok"
+      ]
+    },
+    {
+      "name": "Astronomy",
+      "description": "Objects and methods for understanding the universe.",
+      "seeds": [
+        "pulsar navigation",
+        "rogue planets",
+        "stellar occultation",
+        "Lagrange points",
+        "solar neutrinos",
+        "planet nine search"
+      ]
+    },
+    {
+      "name": "Mathematics",
+      "description": "Mathematical ideas with unexpected applications.",
+      "seeds": [
+        "Benford law",
+        "Conway's Game of Life",
+        "apportionment paradox",
+        "nontransitive dice",
+        "error correcting codes",
+        "four color theorem"
+      ]
+    },
+    {
+      "name": "Archaeology",
+      "description": "Evidence that changes how the past is understood.",
+      "seeds": [
+        "Vindolanda tablets",
+        "bog bodies",
+        "shipwreck archaeology",
+        "Otzi's toolkit",
+        "Maya reservoir systems",
+        "Pompeii graffiti"
+      ]
+    },
+    {
+      "name": "Everyday Objects",
+      "description": "Hidden histories of ordinary things.",
+      "seeds": [
+        "paper clip history",
+        "zipper invention",
+        "tea bag accident",
+        "barcode origins",
+        "ballpoint pen",
+        "shipping container"
+      ]
+    },
+    {
+      "name": "Medicine and Biology",
+      "description": "Discoveries about bodies, disease, and healing.",
+      "seeds": [
+        "bacteriophages",
+        "placebo surgery",
+        "blood type discovery",
+        "microbiome",
+        "penicillin mold",
+        "immune memory"
+      ]
+    },
+    {
+      "name": "Computer History",
+      "description": "Ideas and machines that shaped computing.",
+      "seeds": [
+        "core rope memory",
+        "packet switching",
+        "Apollo guidance computer",
+        "magnetic drum memory",
+        "computer mouse",
+        "PLATO system"
+      ]
+    },
+    {
+      "name": "Transportation",
+      "description": "Ingenious ways people and goods move.",
+      "seeds": [
+        "cargo cult runway",
+        "Ekranoplan",
+        "rack railway",
+        "containerization",
+        "canal incline plane",
+        "ice roads"
+      ]
+    },
+    {
+      "name": "Materials Science",
+      "description": "Materials with unusual properties and histories.",
+      "seeds": [
+        "shape memory alloys",
+        "aerogel",
+        "Prince Rupert's drops",
+        "tempered glass",
+        "Nitinol",
+        "self healing concrete"
+      ]
+    },
+    {
+      "name": "Psychology and Perception",
+      "description": "How minds interpret the world.",
+      "seeds": [
+        "McGurk effect",
+        "change blindness",
+        "synesthesia",
+        "phantom limb",
+        "inattentional blindness",
+        "circadian rhythm"
+      ]
+    },
+    {
+      "name": "Natural Phenomena",
+      "description": "Strange events in air, water, land, and sky.",
+      "seeds": [
+        "Catatumbo lightning",
+        "brinicles",
+        "lenticular clouds",
+        "sailing stones",
+        "bioluminescent bays",
+        "fire rainbows"
+      ]
+    },
+    {
+      "name": "Unusual Inventions",
+      "description": "Clever devices that solve narrow problems.",
+      "seeds": [
+        "Babbage difference engine",
+        "automated loom",
+        "pneumatic tube",
+        "musical road",
+        "clockwork radio",
+        "diving bell"
+      ]
+    },
+    {
+      "name": "Scientific Discoveries",
+      "description": "Discoveries that changed a field's assumptions.",
+      "seeds": [
+        "cosmic microwave background",
+        "plate tectonics",
+        "quasars",
+        "CRISPR origins",
+        "Higgs boson",
+        "continental drift"
+      ]
+    }
+  ]
+}

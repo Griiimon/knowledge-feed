@@ -47,7 +47,7 @@ Use this architecture:
                +---------------+---------------+
                |                               |
                v                               v
-       content/articles/                 config/topics.yaml
+       content/articles/                 config/topics.json
                |                               |
                +---------------+---------------+
                                |
@@ -148,54 +148,28 @@ The system should prefer depth and novelty over trivia quantity.
 Create:
 
 ```text
-config/topics.yaml
+config/topics.json
 ```
 
 The user should be able to edit this file without understanding the Python code.
 
 Example:
 
-```yaml
-categories:
-
-  - name: Ancient Engineering
-    description: >
-      Engineering, construction, materials, machines and infrastructure
-      from ancient civilizations.
-    seeds:
-      - Roman concrete
-      - ancient water clocks
-      - Antikythera mechanism
-      - ancient road construction
-      - Roman surveying
-      - ancient glassmaking
-
-  - name: Strange Biology
-    description: >
-      Unusual adaptations, biological mechanisms and evolutionary solutions.
-    seeds:
-      - tardigrades
-      - mimic octopus
-      - axolotl regeneration
-      - deep sea gigantism
-
-  - name: Linguistics
-    description: >
-      Unusual properties of human languages and writing systems.
-    seeds:
-      - language isolates
-      - unusual writing systems
-      - linguistic number systems
-      - disappearing languages
-
-  - name: Forgotten Technology
-    description: >
-      Technologies that existed, disappeared, failed or were replaced.
-    seeds:
-      - pneumatic mail
-      - mechanical television
-      - Jacquard loom
-      - early calculating machines
+```json
+{
+  "categories": [
+    {
+      "name": "Ancient Engineering",
+      "description": "Engineering, construction, materials, machines and infrastructure from ancient civilizations.",
+      "seeds": ["Roman concrete", "ancient water clocks", "Antikythera mechanism"]
+    },
+    {
+      "name": "Strange Biology",
+      "description": "Unusual adaptations, biological mechanisms and evolutionary solutions.",
+      "seeds": ["tardigrades", "mimic octopus", "axolotl regeneration"]
+    }
+  ]
+}
 ```
 
 The user should only need to edit this file to customize the subject matter.
@@ -244,7 +218,7 @@ The article should answer:
 
 # 6. Article Data Model
 
-Store generated articles as Markdown with YAML frontmatter OR JSON.
+Store generated articles as Markdown with JSON frontmatter.
 
 Prefer Markdown because it is human-readable and easy to edit manually.
 
@@ -256,26 +230,24 @@ content/articles/2026-09-27-roman-concrete.md
 
 Example:
 
-```yaml
+```text
 ---
-id: roman-concrete-self-healing
-title: "Why Some Roman Concrete Structures Became Stronger With Age"
-category: "Ancient Engineering"
-date: "2026-09-27"
-reading_time: 4
-seed: "Roman concrete"
-tags:
-  - engineering
-  - rome
-  - materials
-status: published
+{
+  "id": "roman-concrete-self-healing",
+  "title": "Why Some Roman Concrete Structures Became Stronger With Age",
+  "category": "Ancient Engineering",
+  "date": "2026-09-27",
+  "reading_time": 4,
+  "seed": "Roman concrete",
+  "tags": ["engineering", "rome", "materials"],
+  "status": "published"
+}
 ---
 
 Article body...
 
 ## Sources
 
-- Source title — URL
 - Source title — URL
 ```
 
@@ -602,12 +574,15 @@ Selection should consider:
 
 Configuration:
 
-```yaml
-generation:
-  articles_per_run: 1
-  min_words: 300
-  max_words: 700
-  avoid_recent_days: 30
+```json
+{
+  "generation": {
+    "articles_per_run": 1,
+    "min_words": 300,
+    "max_words": 700
+  },
+  "content": {"avoid_recent_days": 30}
+}
 ```
 
 Default generation should produce **one article per scheduled run**.
@@ -809,32 +784,23 @@ The user should be able to subscribe through any RSS reader.
 Create:
 
 ```text
-config/config.yaml
+config/config.json
 ```
 
 Example:
 
-```yaml
-site:
-  title: "Knowledge Feed"
-  description: "Small things worth knowing."
-  author: "Knowledge Feed"
-  base_url: ""
-
-generation:
-  articles_per_run: 1
-  min_words: 300
-  max_words: 700
-  max_retries: 3
-  review_enabled: true
-
-openrouter:
-  model: "openrouter/free"
-
-content:
-  avoid_recent_days: 30
-  max_articles_homepage: 20
-  max_articles_archive_page: 50
+```json
+{
+  "site": {
+    "title": "Knowledge Feed",
+    "description": "Small things worth knowing.",
+    "author": "Knowledge Feed",
+    "base_url": ""
+  },
+  "generation": {"articles_per_run": 1, "min_words": 300, "max_words": 700, "max_retries": 3, "review_enabled": true},
+  "openrouter": {"model": "openrouter/free"},
+  "content": {"avoid_recent_days": 30}
+}
 ```
 
 Environment variables should override secrets and machine-specific settings.
@@ -1088,9 +1054,8 @@ Set a hard maximum number of API requests per run.
 
 Example:
 
-```yaml
-generation:
-  max_api_requests_per_run: 5
+```json
+{"generation": {"max_api_requests_per_run": 5}}
 ```
 
 The program must stop when this limit is reached.
@@ -1185,7 +1150,7 @@ At minimum test:
 
 ### Topic selection
 
-* loads valid YAML
+* loads valid JSON
 * rejects malformed configuration
 * avoids recently used seeds
 * rotates categories
@@ -1282,8 +1247,8 @@ A small AI-generated knowledge feed.
 1. Create GitHub repository.
 2. Copy repository contents.
 3. Add `OPENROUTER_API_KEY` as GitHub Actions secret.
-4. Edit `config/topics.yaml`.
-5. Edit `config/config.yaml`.
+4. Edit `config/topics.json`.
+5. Edit `config/config.json`.
 6. Enable GitHub Pages with GitHub Actions.
 7. Run workflow manually once.
 8. Site will subsequently generate according to schedule.
@@ -1317,8 +1282,8 @@ python -m knowledge_feed generate-and-build
 Explain where to edit:
 
 ```text
-config/topics.yaml
-config/config.yaml
+config/topics.json
+config/config.json
 src/knowledge_feed/prompts.py
 site templates
 CSS
@@ -1328,7 +1293,7 @@ CSS
 
 # 39. Example Initial Topic Pool
 
-Include a reasonably diverse starter `topics.yaml` so the project works immediately.
+Include a reasonably diverse starter `topics.json` so the project works immediately.
 
 Categories should include approximately:
 
@@ -1396,8 +1361,8 @@ knowledge-feed/
 │       └── knowledge-feed.yml
 │
 ├── config/
-│   ├── config.yaml
-│   └── topics.yaml
+│   ├── config.json
+│   └── topics.json
 │
 ├── content/
 │   └── articles/
@@ -1496,7 +1461,7 @@ The implementation is complete when a fresh clone can be configured with approxi
 ```text
 1. GitHub repository
 2. OPENROUTER_API_KEY secret
-3. topics.yaml customization
+3. topics.json customization
 ```
 
 and then:

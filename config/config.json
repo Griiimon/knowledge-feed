@@ -1,0 +1,25 @@
+{
+  "site": {
+    "title": "Knowledge Feed",
+    "description": "Small things worth knowing.",
+    "author": "Knowledge Feed",
+    "base_url": ""
+  },
+  "generation": {
+    "articles_per_run": 1,
+    "min_words": 300,
+    "max_words": 700,
+    "max_retries": 3,
+    "max_api_requests_per_run": 5,
+    "review_enabled": true,
+    "approval_threshold": 1
+  },
+  "openrouter": {
+    "model": "openrouter/free"
+  },
+  "content": {
+    "avoid_recent_days": 30,
+    "max_articles_homepage": 20,
+    "max_articles_archive_page": 50
+  }
+}

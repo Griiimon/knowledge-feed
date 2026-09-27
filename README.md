@@ -6,7 +6,7 @@ A small, static, AI-assisted knowledge publication: short articles about unusual
 
 1. Create a GitHub repository and add this project.
 2. Add `OPENROUTER_API_KEY` under **Settings → Secrets and variables → Actions**. Never commit this key.
-3. Customize `config/topics.yaml` and `config/config.yaml`.
+3. Customize `config/topics.json` and `config/config.json`.
 4. In repository Pages settings, select **GitHub Actions** as the source.
 5. Run the **Knowledge Feed** workflow once; it generates an article, commits it, builds `site/`, and deploys it.
 
@@ -26,9 +26,9 @@ Other commands are `generate`, `generate --dry-run`, `validate`, and `list-topic
 
 ## Customize
 
-- `config/topics.yaml`: editable categories and seeds.
-- `config/config.yaml`: site settings and generation limits.
+- `config/topics.json`: editable categories and seeds.
+- `config/config.json`: site settings and generation limits.
 - `src/knowledge_feed/prompts.py`: generation and review prompts.
 - `templates/` and `static/`: static site design.
 
-Generated Markdown belongs in `content/articles/`. Only `published` articles are rendered. The website is entirely static and requires no server, database, paid hosting, paid search, or user accounts.
+Generated Markdown uses JSON frontmatter and belongs in `content/articles/`. Only `published` articles are rendered. The website is entirely static and requires no server, database, paid hosting, paid search, or user accounts.
