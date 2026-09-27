@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% set asset_prefix='../' %}{% block content %}<h1>Archive</h1>{% for item in featured %}<article><p class="meta">{{ item.article.date }} · {{ item.article.category }}</p><h2><a href="../articles/{{ item.slug }}/">{{ item.article.title }}</a></h2><p>{{ item.article.summary }}</p></article>{% endfor %}{% endblock %}
