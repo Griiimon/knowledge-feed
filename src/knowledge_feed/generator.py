@@ -26,6 +26,8 @@ class ResponseLogger:
 
 def parse_generated(raw: str, topic: Topic, min_words: int, max_words: int) -> dict:
     raw = raw.strip()
+    if not raw:
+        raise ValueError("model returned an empty response")
     if raw.startswith("```"):
         raw = raw.split("\n", 1)[1] if "\n" in raw else ""
         if raw.rstrip().endswith("```"):
@@ -37,11 +39,25 @@ def parse_generated(raw: str, topic: Topic, min_words: int, max_words: int) -> d
     required_fields = ("title", "summary", "body_markdown", "tags", "sources")
     if not isinstance(data, dict) or not all(key in data for key in required_fields):
         raise ValueError("model response missing required fields")
+    for field in ("title", "summary", "body_markdown"):
+        if not isinstance(data[field], str):
+            raise ValueError(f"{field} must be a string")
+    if not isinstance(data["tags"], list) or not all(
+        isinstance(tag, str) for tag in data["tags"]
+    ):
+        raise ValueError("tags must be a list of strings")
+    if not isinstance(data["sources"], list):
+        raise ValueError("sources must be a list")
+    if not all(
+        isinstance(source, dict)
+        and isinstance(source.get("title"), str)
+        and isinstance(source.get("url"), str)
+        for source in data["sources"]
+    ):
+        raise ValueError("each source must have string title and url fields")
     words = len(str(data["body_markdown"]).split())
     if not min_words <= words <= max_words:
         raise ValueError(f"article has {words} words; expected {min_words}-{max_words}")
-    if not isinstance(data["tags"], list) or not isinstance(data["sources"], list):
-        raise ValueError("tags and sources must be lists")
     return data
 
 
@@ -69,7 +85,7 @@ def generate_article(
         if requests_used >= request_budget - reserved_requests:
             continue
         try:
-            raw = client.chat(repair_prompt(raw))
+            raw = client.chat(repair_prompt(raw, str(last_error)))
             if response_logger:
                 response_logger.log("repair", raw)
             data = parse_generated(

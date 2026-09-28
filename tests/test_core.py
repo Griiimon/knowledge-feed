@@ -10,6 +10,7 @@ from knowledge_feed.deduplication import is_duplicate
 from knowledge_feed.generator import ResponseLogger, parse_generated
 from knowledge_feed.models import Article
 from knowledge_feed.openrouter import OpenRouterClient, OpenRouterError
+from knowledge_feed.prompts import generation_prompt
 from knowledge_feed.site import build_site
 from knowledge_feed.topic_selector import select_topic
 
@@ -210,6 +211,39 @@ def test_parse_generated_accepts_json_markdown_fences():
     parsed = parse_generated(raw, None, 300, 700)
 
     assert parsed["title"] == "A focused topic"
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("tags", "Tags: science", "tags must be a list of strings"),
+        ("sources", "Sources: https://example.com", "sources must be a list"),
+        ("sources", [{"title": "Reference"}], "each source must have string title and url fields"),
+    ],
+)
+def test_parse_generated_rejects_malformed_collection_fields(field, value, message):
+    data = {
+        "title": "A focused topic",
+        "summary": "Brief summary",
+        "body_markdown": "word " * 300,
+        "tags": ["test"],
+        "sources": [],
+    }
+    data[field] = value
+
+    with pytest.raises(ValueError, match=message):
+        parse_generated(json.dumps(data), None, 300, 700)
+
+
+def test_generation_prompt_requires_json_without_reasoning():
+    from knowledge_feed.models import Topic
+
+    prompt = generation_prompt(Topic("Test", "test topic", "seed"), 300, 700)
+
+    assert "ONLY one valid JSON object" in prompt
+    assert "reasoning, thinking process" in prompt
+    assert '"tags": ["string", "string"]' in prompt
+    assert '"sources": [{"title": "string", "url": "https://example.com/source"}]' in prompt
 
 
 def test_openrouter_retries_when_response_has_no_message_content():
