@@ -72,7 +72,10 @@ def generate_article(
     last_error = None
     requests_used = 0
     while requests_used < request_budget - reserved_requests:
-        raw = client.chat(generation_prompt(topic, settings["min_words"], settings["max_words"]))
+        raw = client.chat(
+            generation_prompt(topic, settings["min_words"], settings["max_words"]),
+            json_object=True,
+        )
         if response_logger:
             response_logger.log("generation", raw)
         requests_used += 1
@@ -85,7 +88,15 @@ def generate_article(
         if requests_used >= request_budget - reserved_requests:
             continue
         try:
-            raw = client.chat(repair_prompt(raw, str(last_error)))
+            raw = client.chat(
+                repair_prompt(
+                    raw,
+                    str(last_error),
+                    settings["min_words"],
+                    settings["max_words"],
+                ),
+                json_object=True,
+            )
             if response_logger:
                 response_logger.log("repair", raw)
             data = parse_generated(
@@ -99,7 +110,7 @@ def generate_article(
         raise ValueError("model did not return a valid article within the API request limit") from last_error
 
     if review_enabled:
-        raw_review = client.chat(review_prompt(data))
+        raw_review = client.chat(review_prompt(data), json_object=True)
         if response_logger:
             response_logger.log("review", raw_review)
         try:

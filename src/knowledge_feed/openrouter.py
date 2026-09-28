@@ -18,12 +18,19 @@ class OpenRouterClient:
         self.timeout = timeout
         self.retries = retries
 
-    def chat(self, prompt: str, max_tokens: int = 1600) -> str:
-        payload = json.dumps({
+    def chat(
+        self, prompt: str, max_tokens: int = 1600, *, json_object: bool = False
+    ) -> str:
+        request_data = {
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
             "max_tokens": max_tokens,
-        }).encode("utf-8")
+        }
+        if json_object:
+            # Prompt instructions alone are not sufficient for every routed model.
+            # This asks OpenRouter to constrain the assistant content to JSON.
+            request_data["response_format"] = {"type": "json_object"}
+        payload = json.dumps(request_data).encode("utf-8")
 
         for attempt in range(self.retries + 1):
             req = request.Request(
