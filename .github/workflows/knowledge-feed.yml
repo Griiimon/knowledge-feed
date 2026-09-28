@@ -26,9 +26,11 @@ jobs:
           path: debug/openrouter-responses.jsonl
           if-no-files-found: ignore
       - run: |
-          if git diff --quiet -- content/articles; then exit 1; fi
-          slug=$(git diff --name-only -- content/articles | sed -n "s#content/articles/.*-\(.*\)\.md#\1#p" | head -1)
-          git add content/articles && git commit -m "content: add $slug" && git push
+          git add content/articles
+          git diff --cached --quiet && exit 1
+          slug=$(git diff --cached --name-only -- content/articles | sed -n "s#content/articles/.*-\(.*\)\.md#\1#p" | head -1)
+          git commit -m "content: add $slug"
+          git push
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: {path: site}
