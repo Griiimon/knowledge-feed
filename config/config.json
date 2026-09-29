@@ -11,7 +11,7 @@
     "max_words": 700,
     "max_retries": 3,
     "max_api_requests_per_run": 5,
-    "review_enabled": true,
+    "review_enabled": false,
     "approval_threshold": 1
   },
   "openrouter": {
