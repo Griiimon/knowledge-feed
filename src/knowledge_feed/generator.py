@@ -35,7 +35,25 @@ def parse_generated(raw: str, topic: Topic, min_words: int, max_words: int) -> d
     try:
         data = json.loads(raw)
     except json.JSONDecodeError as exc:
-        raise ValueError("model returned malformed JSON") from exc
+        # Some providers prepend a short message despite JSON mode. Recover a
+        # complete JSON object when one is present, but never attempt to repair a
+        # truncated object locally.
+        decoder = json.JSONDecoder()
+        data = None
+        for index, character in enumerate(raw):
+            if character != "{":
+                continue
+            try:
+                candidate, _ = decoder.raw_decode(raw[index:])
+            except json.JSONDecodeError:
+                continue
+            if isinstance(candidate, dict) and {
+                "title", "summary", "body_markdown", "tags", "sources"
+            }.issubset(candidate):
+                data = candidate
+                break
+        if data is None:
+            raise ValueError("model returned malformed JSON") from exc
     required_fields = ("title", "summary", "body_markdown", "tags", "sources")
     if not isinstance(data, dict) or not all(key in data for key in required_fields):
         raise ValueError("model response missing required fields")
@@ -92,6 +110,7 @@ def generate_article(
                 repair_prompt(
                     raw,
                     str(last_error),
+                    topic,
                     settings["min_words"],
                     settings["max_words"],
                 ),

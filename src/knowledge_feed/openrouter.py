@@ -19,7 +19,7 @@ class OpenRouterClient:
         self.retries = retries
 
     def chat(
-        self, prompt: str, max_tokens: int = 1600, *, json_object: bool = False
+        self, prompt: str, max_tokens: int = 2400, *, json_object: bool = False
     ) -> str:
         request_data = {
             "model": self.model,
